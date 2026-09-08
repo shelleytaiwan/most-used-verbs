@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>超高頻動詞練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE6D6;
+    --paper-2:#E7DCC6;
+    --ink:#2B2A28;
+    --ink-soft:#5B564C;
+    --jade:#3E6259;
+    --jade-deep:#2B463F;
+    --seal:#AE3B34;
+    --seal-deep:#8C2B26;
+    --gold:#B08A48;
+    --line:#C9BCA0;
+    --card:#FBF7EE;
+    --wrong:#A6453B;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(43,42,40,0.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    max-width:520px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  .han{font-family:'Noto Serif TC', serif;}
+  .app.lang-s .han{font-family:'Noto Serif SC', serif;}
+  .app.lang-t .han{font-family:'Noto Serif TC', serif;}
+  .han-tc{font-family:'Noto Serif TC', serif !important;}
+  .han-sc{font-family:'Noto Serif SC', serif !important;}
+  ::selection{background:var(--gold); color:#fff;}
+
+  .screen{display:none; flex-direction:column; flex:1; animation:fadeIn .35s ease;}
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  #screen-start{
+    align-items:center;
+    justify-content:center;
+    padding:20px 20px 30px;
+    text-align:center;
+    min-height:100vh;
+  }
+  .seal-mark{
+    width:110px;
+    height:110px;
+    border-radius:16px;
+    background:var(--seal);
+    color:#F6EFE0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size:58px;
+    margin-bottom:16px;
+    box-shadow:0 6px 0 var(--seal-deep);
+    transform:rotate(-3deg);
+    flex-shrink:0;
+  }
+  .title-main{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size:48px;
+    letter-spacing:.06em;
+    margin:0 0 8px;
+    color:var(--jade-deep);
+    line-height:1.2;
+  }
+  .title-main .highlight{
+    color:var(--seal);
+  }
+  .title-sub{
+    color:var(--ink-soft);
+    font-size:17px;
+    margin:0 0 28px;
+    line-height:2.2;
+    letter-spacing:.03em;
+  }
+  .lang-choice{
+    display:flex;
+    gap:16px;
+    width:100%;
+    max-width:380px;
+  }
+  .lang-btn{
+    flex:1;
+    padding:18px 12px;
+    border-radius:var(--radius);
+    background:var(--card);
+    border:2px solid var(--line);
+    cursor:pointer;
+    font-family:'Noto Serif TC',serif;
+    font-weight:700;
+    font-size:20px;
+    color:var(--ink);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s;
+    box-shadow:0 4px 0 var(--line);
+  }
+  .lang-btn small{
+    display:block;
+    font-family:'Noto Sans TC',sans-serif;
+    font-weight:400;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:4px;
+    letter-spacing:.02em;
+  }
+  .lang-btn:active{
+    transform:translateY(4px);
+    box-shadow:0 0 0 var(--line);
+  }
+  .lang-btn:hover{
+    border-color:var(--jade);
+  }
+
+  .start-footer{
+    margin-top:40px;
+    padding:0;
+    text-align:center;
+  }
+  .start-footer .copyright{
+    font-size:12px;
+    color:var(--ink-soft);
+    letter-spacing:.06em;
+    font-family:'Noto Sans TC',sans-serif;
+  }
+
+  .topbar{
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px; border-bottom:1.5px solid var(--line);
+    background:rgba(251,247,238,0.9); backdrop-filter:blur(4px);
+    position:sticky; top:0; z-index:20;
+  }
+  .icon-btn{
+    width:36px; height:36px; border-radius:10px; border:1.5px solid var(--line);
+    background:var(--card); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; font-size:16px; color:var(--ink);
+  }
+  .icon-btn:active{transform:scale(.94);}
+  .topbar-title{
+    font-family:'Noto Serif TC',serif; font-weight:700; font-size:16.5px; flex:1;
+  }
+  .toggle-pill{
+    display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:20px;
+    border:1.5px solid var(--line); background:var(--card); font-size:12.5px; cursor:pointer; color:var(--ink-soft);
+    user-select:none;
+  }
+  .toggle-pill.on{background:var(--jade); color:#F6EFE0; border-color:var(--jade-deep);}
+
+  #screen-list .content{padding:16px; flex:1; overflow-y:auto;}
+  .tabs{display:flex; gap:8px; padding:4px; background:var(--paper-2); border-radius:12px; margin-bottom:16px;}
+  .tab{
+    flex:1; text-align:center; padding:10px 6px; border-radius:9px; cursor:pointer;
+    font-family:'Noto Serif TC', serif; font-weight:700; font-size:15px; color:var(--ink-soft);
+  }
+  .tab.active{background:var(--card); color:var(--jade-deep); box-shadow:0 2px 0 var(--line);}
+  .verb-strip{
+    display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; padding:12px;
+    background:var(--card); border:1.5px solid var(--line); border-radius:var(--radius);
+  }
+  .verb-strip .vchip{
+    font-family:'Noto Serif TC',serif; font-size:14px; padding:4px 9px; border-radius:6px;
+    background:var(--paper); border:1px solid var(--line); color:var(--ink-soft);
+  }
+  .section-label{font-size:12px; color:var(--ink-soft); margin:0 0 8px 2px; letter-spacing:.05em;}
+  .card-list{display:flex; flex-direction:column; gap:10px;}
+  .item-card{
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; cursor:pointer; transition:transform .12s ease;
+  }
+  .item-card:active{transform:scale(.98);}
+  .item-num{
+    width:34px; height:34px; border-radius:8px; background:var(--jade); color:#F6EFE0;
+    display:flex; align-items:center; justify-content:center; font-family:'Noto Serif TC',serif;
+    font-weight:700; font-size:15px; flex-shrink:0;
+  }
+  .item-card.dialogue .item-num{background:var(--seal);}
+  .item-title{font-family:'Noto Serif TC',serif; font-weight:700; font-size:16.5px;}
+  .item-sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .item-progress{
+    font-size:11px; padding:3px 8px; border-radius:10px; background:var(--paper-2); color:var(--ink-soft); flex-shrink:0;
+  }
+  .item-progress.done{background:var(--jade); color:#F6EFE0;}
+
+  #screen-exercise{padding-bottom:90px;}
+  .wordbank{
+    display:flex; flex-wrap:wrap; gap:8px; padding:14px 16px;
+    background:var(--paper-2); border-bottom:1.5px solid var(--line);
+  }
+  .chip{
+    font-family:'Noto Serif TC',serif; font-weight:700; font-size:16px;
+    padding:7px 13px; border-radius:9px; background:var(--card);
+    border:1.5px solid var(--line); cursor:pointer; color:var(--ink);
+    box-shadow:0 2px 0 var(--line);
+    transition:transform .1s ease;
+  }
+  .chip:active{transform:translateY(2px); box-shadow:none;}
+  .chip.dim{opacity:.45;}
+  .passage-wrap{padding:18px 18px 8px;}
+  .passage-title{
+    font-family:'Noto Serif TC',serif; font-weight:900; font-size:19px; margin:0 0 14px;
+    color:var(--jade-deep); text-align:center;
+  }
+  .passage-body{font-size:18px; line-height:2.6; letter-spacing:.02em;}
+  .passage-body ruby{ruby-align:center;}
+  rt{font-size:10px; color:var(--ink-soft); font-family:'Noto Sans TC',sans-serif; user-select:none;}
+  .pinyin-off rt{display:none;}
+
+  .dialogue-turn{margin-bottom:16px; display:flex; gap:10px; align-items:flex-start;}
+  .speaker-badge{
+    flex-shrink:0; min-width:44px; text-align:center; padding:5px 6px; border-radius:8px;
+    background:var(--jade); color:#F6EFE0; font-family:'Noto Serif TC',serif; font-weight:700; font-size:13px;
+    line-height:1.3;
+  }
+  .dialogue-turn:nth-child(even) .speaker-badge{background:var(--seal);}
+  .dialogue-line{font-size:17.5px; line-height:2.4; flex:1; padding-top:2px;}
+
+  .blank{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:44px; height:34px; padding:0 8px; margin:0 2px;
+    border-bottom:3px solid var(--ink-soft); border-radius:4px 4px 0 0;
+    font-family:'Noto Serif TC',serif; font-weight:700; font-size:17px;
+    cursor:pointer; vertical-align:middle; color:var(--ink); background:rgba(255,255,255,.35);
+    transition:all .12s ease;
+  }
+  .blank.active{border-color:var(--gold); background:rgba(176,138,72,.18);}
+  .blank.correct{border-color:var(--jade); background:rgba(62,98,89,.16); color:var(--jade-deep);}
+  .blank.wrong{border-color:var(--wrong); background:rgba(166,69,59,.14); color:var(--wrong); animation:shake .3s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px);}75%{transform:translateX(3px);}}
+
+  .bottom-bar{
+    position:fixed; left:0; right:0; bottom:0; max-width:520px; margin:0 auto;
+    background:var(--card); border-top:1.5px solid var(--line); padding:12px 16px;
+    display:flex; align-items:center; gap:12px; z-index:30;
+  }
+  .progress-track{flex:1; height:8px; background:var(--paper-2); border-radius:5px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--jade); width:0%; transition:width .25s ease;}
+  .check-btn{
+    padding:11px 22px; border-radius:10px; border:none; background:var(--jade); color:#F6EFE0;
+    font-family:'Noto Serif TC',serif; font-weight:700; font-size:15.5px; cursor:pointer;
+    box-shadow:0 3px 0 var(--jade-deep); flex-shrink:0;
+  }
+  .check-btn:disabled{background:#B9B2A0; box-shadow:0 3px 0 #9d9683; cursor:not-allowed;}
+  .check-btn:active:not(:disabled){transform:translateY(3px); box-shadow:none;}
+  .hint-btn{
+    padding:11px 14px; border-radius:10px; border:1.5px solid var(--gold); background:var(--card); color:var(--gold);
+    font-family:'Noto Serif TC',serif; font-weight:700; font-size:13.5px; cursor:pointer; flex-shrink:0;
+  }
+  .hint-btn.on{background:var(--gold); color:#F6EFE0;}
+  .hint-btn:active{transform:scale(.96);}
+  .blank.hint{border-color:var(--gold); background:rgba(176,138,72,.14); color:#8a6a30; font-size:14px; min-width:auto; padding:0 6px;}
+
+  .result-banner{
+    margin:0 16px 14px; padding:16px; border-radius:var(--radius);
+    text-align:center; font-family:'Noto Serif TC',serif; font-weight:700; font-size:16px;
+    display:none;
+  }
+  .result-banner.show{display:block; animation:popIn .4s ease;}
+  @keyframes popIn{0%{transform:scale(.85); opacity:0;}100%{transform:scale(1); opacity:1;}}
+  .result-banner.perfect{background:var(--jade); color:#F6EFE0;}
+  .result-banner.retry{background:#EFDDD2; color:var(--wrong); border:1.5px solid var(--wrong);}
+  .stamp{
+    display:inline-block; border:3px solid #F6EFE0; border-radius:8px; padding:4px 10px;
+    transform:rotate(-6deg); margin-bottom:6px; font-size:13px; letter-spacing:.15em;
+  }
+
+  .footer-note{
+    padding:16px 18px 12px;
+    text-align:center;
+    font-family:'Noto Sans TC',sans-serif;
+  }
+  .footer-note .copyright{
+    font-size:12px;
+    color:var(--ink-soft);
+    letter-spacing:.06em;
+  }
+</style>
+</head>
+<body>
+<div class="app lang-t" id="app-root">
+
+  <div class="screen active" id="screen-start">
+    <div class="seal-mark">動</div>
+    <h1 class="title-main han">超高頻<span class="highlight">動</span>詞練習</h1>
+    <p class="title-sub han">高頻動詞填空練習<br>請選擇語言</p>
+    <div class="lang-choice">
+      <button class="lang-btn han-tc" onclick="chooseLang('t')">繁體中文<small>Traditional</small></button>
+      <button class="lang-btn han-sc" onclick="chooseLang('s')">简体中文<small>Simplified</small></button>
+    </div>
+    <div class="start-footer">
+      <span class="copyright">Shelleytaiwan 製作 · 2026 · 請勿商用</span>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-list">
+    <div class="topbar">
+      <div class="icon-btn" onclick="goStart()">←</div>
+      <div class="topbar-title han" id="list-title">超高頻動詞練習</div>
+      <div class="toggle-pill" id="pinyin-toggle-list" onclick="togglePinyin()">拼音</div>
+      <div class="icon-btn" onclick="toggleLangQuick()" id="lang-quick-btn" title="切換語言">文</div>
+    </div>
+    <div class="content">
+      <div class="section-label" id="lbl-wordbank">動詞選項</div>
+      <div class="verb-strip" id="verb-strip-list"></div>
+      <div class="tabs">
+        <div class="tab active" id="tab-passage" onclick="switchTab('passage')">短文</div>
+        <div class="tab" id="tab-dialogue" onclick="switchTab('dialogue')">會話</div>
+      </div>
+      <div class="card-list" id="card-list"></div>
+    </div>
+    <div class="footer-note">
+      <span class="copyright">Shelleytaiwan 製作 · 2026 · 請勿商用</span>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-exercise">
+    <div class="topbar">
+      <div class="icon-btn" onclick="goList()">←</div>
+      <div class="topbar-title han" id="exercise-title">–</div>
+      <div class="toggle-pill" id="pinyin-toggle-ex" onclick="togglePinyin()">拼音</div>
+    </div>
+    <div class="wordbank" id="wordbank"></div>
+    <div id="exercise-body"></div>
+    <div class="result-banner" id="result-banner"></div>
+    <div class="bottom-bar">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <button class="hint-btn" id="hint-btn" onclick="toggleShowAnswers()">顯示答案</button>
+      <button class="check-btn" id="check-btn" onclick="checkAnswers()" disabled>對答案</button>
+    </div>
+  </div>
+
+</div>
+<script>
+// ==================== DATA ====================
+const VERBS = [
+  {t:"是",s:"是"},{t:"在",s:"在"},{t:"有",s:"有"},{t:"說",s:"说"},{t:"要",s:"要"},
+  {t:"來",s:"来"},{t:"到",s:"到"},{t:"想",s:"想"},{t:"看",s:"看"},{t:"做",s:"做"},
+  {t:"用",s:"用"},{t:"知道",s:"知道"},{t:"開始",s:"开始"},{t:"覺得",s:"觉得"},{t:"給",s:"给"},
+  {t:"會",s:"会"},{t:"吃",s:"吃"},{t:"能",s:"能"},{t:"可以",s:"可以"},{t:"去",s:"去"},
+  {t:"喝",s:"喝"},{t:"聽",s:"听"},{t:"寫",s:"写"},{t:"讀",s:"读"},{t:"回",s:"回"},
+  {t:"走",s:"走"},{t:"叫",s:"叫"},{t:"買",s:"买"},{t:"住",s:"住"}
+];
+
+// Simplified -> Traditional lookup for the verb bank, used so that
+// answer-checking works correctly in Simplified-Chinese mode too.
+const S2T = {};
+VERBS.forEach(v=>{ if(v.s!==v.t) S2T[v.s]=v.t; });
+
+const PASSAGES = [
+  {title:{t:"公司",s:"公司"}, segs:[{t:"經理今天在公司開會。他（1），我們（2）開始推廣一個新的計畫，大家都（3）這是一個展現自己的好機會。小李（4）看看市場調查的資料，於是小王就（5）了他一份報表。大家開始（6）電腦找資料，準備（7）簡報。老闆知道後，（8）謝謝大家這麼努力，都（9）讓公司的業績更好。計劃成功的話（10）請大家吃飯。",s:"经理今天在公司开会。他（1），我们（2）开始推广一个新的计画，大家都（3）这是一个展现自己的好机会。小李（4）看看市场调查的资料，于是小王就（5）了他一份报表。大家开始（6）电脑找资料，准备（7）简报。老板知道后，（8）谢谢大家这么努力，都（9）让公司的业绩更好。计画成功的话（10）请大家吃饭。"}], answers:["說","要","覺得","想","給","用","做","說","想","會"]},
+  {title:{t:"同學會",s:"同学会"}, segs:[{t:"多年不見的老朋友今天都（1）參加同學會了。大家（2）了餐廳，都非常高興。班長還是很活潑。小美看著大家（3）她覺得大家都沒變。我問小張怎麼沒（4）？班長（5）小張（6）他很（7）（8），可是今天（9）上班，不（10）（11）。我們一邊吃飯，一邊聊天，大家都（12）這麼有意思的活動應該要多舉辦。聚會的時候，我們（13）相機拍了很多照片，希望以後還（14）有機會再見面。",s:"多年不见的老朋友今天都（1）参加同学会了。大家（2）了餐厅，都非常高兴。班长还是很活泼。小美看著大家（3）她觉得大家都没变。我问小张怎么没（4）？班长（5）小张（6）他很（7）（8），可是今天（9）上班，不（10）（11）。我们一边吃饭，一边聊天，大家都（12）这么有意思的活动应该要多举办。聚会的时候，我们（13）相机拍了很多照片，希望以后还（14）有机会再见面。"}], answers:["來","到","說","來","說","說","想","來","要","能","來","覺得","用","能"]},
+  {title:{t:"餐廳宴會",s:"餐厅宴会"}, segs:[{t:"今天是朋友的生日宴會，我們（1）了這家很有名的中國餐廳。服務生把菜單（2）我們看，問我們（3）吃什麼。大家看了菜單後，（4）每道菜都很好吃，於是點了很多招牌菜。大家（5）說（6）笑，（7）得好飽。服務生（8）今天是生日，還特別送了一盤水果，祝朋友生日快樂。我們都（9）今天很開心。",s:"今天是朋友的生日宴会，我们（1）了这家很有名的中国餐厅。服务生把菜单（2）我们看，问我们（3）吃什么。大家看了菜单后，（4）每道菜都很好吃，于是点了很多招牌菜。大家（5）说（6）笑，（7）得好饱。服务生（8）今天是生日，还特别送了一盘水果，祝朋友生日快乐。我们都（9）今天很开心。"}], answers:["到","給","要","覺得","有","有","吃","知道","覺得"]},
+  {title:{t:"購物與生活",s:"购物与生活"}, segs:[{t:"小美週末（1）超級市場（2）一些生活用品。（3）了超市後，她（4）（5）洗面乳，（6）了很久，不（7）要（8）哪一種。這時，店員（9）過來（10）這款產品正在打折，小美就（11）了那一種。（12）家後（13）了，她（14）效果非常好。",s:"小美周末（1）超级市场（2）一些生活用品。（3）了超市后，她（4）（5）洗面乳，（6）了很久，不（7）要（8）哪一种。这时，店员（9）过来（10）这款产品正在打折，小美就（11）了那一种。（12）家后（13）了，她（14）效果非常好。"}], answers:["去","買","到","想","買","看","知道","買","走","說","買","回","用","覺得"]},
+  {title:{t:"週末計畫",s:"周末计画"}, segs:[{t:"小芳今天在家裡休息，她（1）規劃一下週末的行程。她打電話給朋友，問大家週末有沒有空（2）家裡聚聚。朋友（3）他們很樂意（4），還（5）帶一些好吃的零食。於是，小芳（6）打掃房間，並（7）網路查了幾個好玩的桌遊。她（8）這個週末一定會非常開心。",s:"小芳今天在家里休息，她（1）规划一下周末的行程。她打电话给朋友，问大家周末有没有空（2）家里聚聚。朋友（3）他们很乐意（4），还（5）带一些好吃的零食。于是，小芳（6）打扫房间，并（7）网路查了几个好玩的桌游。她（8）这个周末一定会非常开心。"}], answers:["想","來","說","來","要","開始","用","覺得"]},
+  {title:{t:"我的大學生活",s:"我的大学生活"}, segs:[{t:"我現在（1）一名大學生，平常（2）學校上課。我的學校（3）很多不同的課程，所以我每天都能（4）到新的東西。早上我常常和同學一起（5）早餐，然後（6）教室上課。老師（7），學習不只是為了考試，也要（8）我們學會自己思考。我覺得很有道理。下課以後，我（9）和朋友一起（10）圖書館。那裡（11）很多書，我們（12）用電腦查資料，也（13）一起討論報告。以前我不（14）怎麼做報告，但是現在我慢慢（15）會了。我相信自己以後一定（16）做得更好。",s:"我现在（1）一名大学生，平常（2）学校上课。我的学校（3）很多不同的课程，所以我每天都能（4）到新的东西。早上我常常和同学一起（5）早餐，然后（6）教室上课。老师（7），学习不只是为了考试，也要（8）我们学会自己思考。我觉得很有道理。下课以后，我（9）和朋友一起（10）图书馆。那里（11）很多书，我们（12）用电脑查资料，也（13）一起讨论报告。以前我不（14）怎么做报告，但是现在我慢慢（15）会了。我相信自己以后一定（16）做得更好。"}], answers:["是","在","有","學","吃","到","說","讓","會","到","有","可以","可以","知道","學","能"]},
+  {title:{t:"週末的一天",s:"周末的一天"}, segs:[{t:"星期六早上，我（1）晚一點起床。起床以後，我先（2）早餐，然後把房間打掃一下。今天我（3）和朋友一起出（4）。朋友（5）：「我們下午（6）去看電影好嗎？」我（7）這個主意很好，就答應了。我們先（8）車站，再一起搭電車（9）市中心。到了那裡以後，我們先（10）午飯，再（11）看電影。電影很好看，故事也（12）我們覺得很開心。看完電影以後，我們還一起聊天。朋友跟我（13）了一個很有意思的故事，讓我（14）到很多以前不知道的事。晚上（15）家以前，我告訴他，下次我還（16）再跟他一起出（17）玩。我（18）這一天過得非常開心。",s:"星期六早上，我（1）晚一点起床。起床以后，我先（2）早餐，然后把房间打扫一下。今天我（3）和朋友一起出（4）。朋友（5）：「我们下午（6）去看电影好吗？」我（7）这个主意很好，就答应了。我们先（8）车站，再一起搭电车（9）市中心。到了那里以后，我们先（10）午饭，再（11）看电影。电影很好看，故事也（12）我们觉得很开心。看完电影以后，我们还一起聊天。朋友跟我（13）了一个很有意思的故事，让我（14）到很多以前不知道的事。晚上（15）家以前，我告诉他，下次我还（16）再跟他一起出（17）玩。我（18）这一天过得非常开心。"}], answers:["想","吃","要","去","說","可以","覺得","到","到","吃","去","讓","說","學","回","想","來","覺得"]},
+  {title:{t:"學習新語言",s:"学习新语言"}, segs:[{t:"很多學生（1）學習新的語言，但是剛（2）的時候，常常（3）很難。我以前也是這樣。我聽不懂老師（4）的話，也不（5）怎麼使用新的詞語。後來，老師（6）我一個方法：每天花一點時間學習。她（7）：「不要害怕犯錯，只要繼續學，就一定（8）進步。」所以我每天（9）簡單的文章，也試著（10）新的詞語來造句。有時候，我會和同學一起練習，互相（11）對方一些建議。現在我（12）聽懂更多內容了，也（13）用新的語言和別人聊天。我（14）學習語言不只是為了考試，更是為了和更多人交流。",s:"很多学生（1）学习新的语言，但是刚（2）的时候，常常（3）很难。我以前也是这样。我听不懂老师（4）的话，也不（5）怎么使用新的词语。后来，老师（6）我一个方法：每天花一点时间学习。她（7）：「不要害怕犯错，只要继续学，就一定（8）进步。」所以我每天（9）简单的文章，也试著（10）新的词语来造句。有时候，我会和同学一起练习，互相（11）对方一些建议。现在我（12）听懂更多内容了，也（13）用新的语言和别人聊天。我（14）学习语言不只是为了考试，更是为了和更多人交流。"}], answers:["想","開始","覺得","說","知道","給","說","能","看","用","給","能","可以","覺得"]},
+  {title:{t:"一次小旅行",s:"一次小旅行"}, segs:[{t:"上個月，我和兩個朋友一起（1）旅行。我們早上八點出發，先（2）車站。到了車站以後，我們一起搭火車（3）另一個城市。那裡（4）很多漂亮的地方，也（5）很多好吃的東西。第一天，我們（6）看了一座很有名的建築。朋友說這座建築很漂亮，我也（7）這裡比我想像的更有意思。中午，我們一起（8）午飯。下午，我們在街上（9）走，還拍了一些照片。晚上，我們找了一家小店吃飯。店裡的服務員跟我們介紹了幾種當地的食物，也（10）了我們一些建議。這次旅行讓我（11），旅行不一定非（12）很遠的地方，只要和喜歡的人一起出（13）（14）走，就（15）得到很多快樂。",s:"上个月，我和两个朋友一起（1）旅行。我们早上八点出发，先（2）车站。到了车站以后，我们一起搭火车（3）另一个城市。那里（4）很多漂亮的地方，也（5）很多好吃的东西。第一天，我们（6）看了一座很有名的建筑。朋友说这座建筑很漂亮，我也（7）这里比我想像的更有意思。中午，我们一起（8）午饭。下午，我们在街上（9）走，还拍了一些照片。晚上，我们找了一家小店吃饭。店里的服务员跟我们介绍了几种当地的食物，也（10）了我们一些建议。这次旅行让我（11），旅行不一定非（12）很远的地方，只要和喜欢的人一起出（13）（14）走，就（15）得到很多快乐。"}], answers:["去","到","到","有","有","去","覺得","吃","走","給","覺得","去","來","走","能"]},
+  {title:{t:"我的未來計畫",s:"我的未来计画"}, segs:[{t:"每個人（1）自己的計畫。我現在在大學（2）書，將來（3）找一份自己喜歡的工作。我（4）學好中文，也（5）學習其他語言。因為學會不同的語言以後，就（6）和更多人交流。老師常常提醒我們，做事情以前要先（7）清楚自己的目標。我（8）想清楚目標很重要。我希望以後有機會（9）不同的國家旅行，（10）看不同的人，也（11）體驗不同的生活。當然，計畫不一定會完全按照我們的（12）法進行。但是只要繼續努力，就（13）慢慢接近自己的目標。我相信未來一定還會遇到很多新的問題，但是我不害怕。我相信自己（14）找到方法解決問題，然後繼續向前（15）。",s:"每个人（1）自己的计划。我现在在大学（2）书，将来（3）找一份自己喜欢的工作。我（4）学好中文，也（5）学习其他语言。因为学会不同的语言以后，就（6）和更多人交流。老师常常提醒我们，做事情以前要先（7）清楚自己的目标。我（8）想清楚目标很重要。我希望以后有机会（9）不同的国家旅行，（10）看不同的人，也（11）体验不同的生活。当然，计划不一定会完全按照我们的（12）法进行。但是只要继续努力，就（13）慢慢接近自己的目标。我相信未来一定还会遇到很多新的问题，但是我不害怕。我相信自己（14）找到方法解决问题，然后继续向前（15）。"}], answers:["有","讀","想","要","想","能","想","覺得","去","去","去","想","能","會","走"]},
+  {title:{t:"奶奶生病了（基礎）",s:"奶奶生病了（基础）"}, segs:[{t:"奶奶生病了，她常常忘記事情。有一天，奶奶（1）到客廳的椅子，忽然大（2），原來她把椅子（3）成了一隻大狗。我（4）她（5）我，她把我（6）成了爸爸的名字。我教她認字，她把美（7）成了羊。奶奶（8）（9）水，卻把這句話（10）成了我（11）出去。她不認識爸爸了，常把爸爸認成了哥哥。奶奶（12）著鏡子，把鏡子裡的自己當成了陌生人，一直問「這（13）誰？」。我（14）這病不（15）好，但是我還是希望她（16）快樂地度過晚年。",s:"奶奶生病了，她常常忘记事情。有一天，奶奶（1）到客厅的椅子，忽然大（2），原来她把椅子（3）成了一只大狗。我（4）她（5）我，她把我（6）成了爸爸的名字。我教她认字，她把美（7）成了羊。奶奶（8）（9）水，却把这句话（10）成了我（11）出去。她不认识爸爸了，常把爸爸认成了哥哥。奶奶（12）著镜子，把镜子里的自己当成了陌生人，一直问「这（13）谁？」。我（14）这病不（15）好，但是我还是希望她（16）快乐地度过晚年。"}], answers:["看","叫","看","要","叫","叫","寫","想","喝","說","想","看","是","知道","會","能"]},
+  {title:{t:"奶奶生病了（進階）",s:"奶奶生病了（进阶）"}, segs:[{t:"失智症像（1）一把隱形的剪刀，悄悄剪碎了奶奶的世界。那些我們視為理所當然的日常，（2）她的感官裡，全都被歪曲、縮小，變成了截然不同的尺寸。\n（3）進客廳，奶奶盯著牆角那張她坐了數十年的舊藤椅，眼神充滿恐懼。她把藤椅（4）成了一隻張牙舞爪的怪獸，嚇得縮（5）床角發抖。（6）她的微小世界裡，原本溫暖的家，已經變成了一個處處充滿威脅的迷宮。\n我們試著安撫她，牽起她的手（7）（8）下家人的名字，幫她找（9）記憶。可是她的手指顫抖著，把（10）家的路（11）成了一行行毫無邏輯的亂碼。\n最讓人心碎的（12）交流的隔閡。她（13）著窗外的落葉，（14）（15）天氣變涼了，卻把這句話（16）成了我（17）（18）家找媽媽。把我（19）成爸爸的名字已經成了常態，我們（20）她，常常沒（21）反應。\n夕陽西下，奶奶（22）著鏡子裡的自己，眼神空洞。她把鏡子裡滿頭白髮的婦人，（23）成了一個闖入房間的陌生人而驚恐地大（24）。\n失智後的悲傷，不（25）驚天動地的哭喊。而是（26）著一個曾經高大的靈魂，如何慢慢地被歲月磨成了細沙，最後縮成了一個我們再也（27）不進（28）的、微小而孤獨的尺寸。",s:"失智症像（1）一把隐形的剪刀，悄悄剪碎了奶奶的世界。那些我们视为理所当然的日常，（2）她的感官里，全都被歪曲、缩小，变成了截然不同的尺寸。\n（3）进客厅，奶奶盯著墙角那张她坐了数十年的旧藤椅，眼神充满恐惧。她把藤椅（4）成了一只张牙舞爪的怪兽，吓得缩（5）床角发抖。（6）她的微小世界里，原本温暖的家，已经变成了一个处处充满威胁的迷宫。\n我们试著安抚她，牵起她的手（7）（8）下家人的名字，帮她找（9）记忆。可是她的手指颤抖著，把（10）家的路（11）成了一行行毫无逻辑的乱码。\n最让人心碎的（12）交流的隔阂。她（13）著窗外的落叶，（14）（15）天气变凉了，却把这句话（16）成了我（17）（18）家找妈妈。把我（19）成爸爸的名字已经成了常态，我们（20）她，常常没（21）反应。\n夕阳西下，奶奶（22）著镜子里的自己，眼神空洞。她把镜子里满头白发的妇人，（23）成了一个闯入房间的陌生人而惊恐地大（24）。\n失智后的悲伤，不（25）惊天动地的哭喊。而是（26）著一个曾经高大的灵魂，如何慢慢地被岁月磨成了细沙，最后缩成了一个我们再也（27）不进（28）的、微小而孤独的尺寸。"}], answers:["是","在","走","看","在","在","想","寫","回","回","寫","是","看","想","說","說","要","回","叫","叫","有","看","看","叫","是","看","走","去"]},
+  {title:{t:"我的新家",s:"我的新家"}, segs:[{t:"我搬到了一個新家，開始一個人（1）。這裡離公司不遠，我每天（2）路去上班，大約二十分鐘就到了。鄰居（3）一對老夫妻，我第一次見到他們的時候，他們熱情地（4）我進去（5）茶，還帶我去附近的市場（6）了一些日常用品。老先生（7），附近（8）一間小圖書館，可以借書（9）家（10），也可以留在裡面（11）書、（12）東西。我很喜歡一個人安靜地（13）音樂。老先生笑著說，他們已經（14）這裡（15）了三十年了。我（16）能（17）在這麼溫暖的社區，真的很幸運。",s:"我搬到了一个新家，开始一个人（1）。这里离公司不远，我每天（2）路去上班，大约二十分钟就到了。邻居（3）一对老夫妻，我第一次见到他们的时候，他们热情地（4）我进去（5）茶，还带我去附近的市场（6）了一些日常用品。老先生（7），附近（8）一间小图书馆，可以借书（9）家（10），也可以留在里面（11）书、（12）东西。我很喜欢一个人安静地（13）音乐。老先生笑著说，他们已经（14）这里（15）了三十年了。我（16）能（17）在这么温暖的社区，真的很幸运。"}], answers:["住","走","是","叫","喝","買","說","有","回","讀","看","寫","聽","在","住","覺得","住"]}
+];
+
+const DIALOGUES = [
+  {title:{t:"公司同事",s:"公司同事"}, turns:[
+    {speaker:{t:"同事A",s:"同事A"}, lines:[{t:"小李，你（1）看什麼呢？",s:"小李，你（1）看什么呢？"}]},
+    {speaker:{t:"同事B",s:"同事B"}, lines:[{t:"我（2）看經理給我們的那個新企劃書。你（3）這個方案怎麼樣？",s:"我（2）看经理给我们的那个新企划书。你（3）这个方案怎么样？"}]},
+    {speaker:{t:"同事A",s:"同事A"}, lines:[{t:"我（4）挺不錯的，（5）很多創意。我們明天（6）開會討論，你（7）嗎？",s:"我（4）挺不错的，（5）很多创意。我们明天（6）开会讨论，你（7）吗？"}]},
+    {speaker:{t:"同事B",s:"同事B"}, lines:[{t:"（8）。我（9）我們先把資料（10）好，然後（11）投影機給大家展示吧。",s:"（8）。我（9）我们先把资料（10）好，然后（11）投影机给大家展示吧。"}]},
+    {speaker:{t:"同事A",s:"同事A"}, lines:[{t:"好，那我們快（12）吧！",s:"好，那我们快（12）吧！"}]}
+  ], answers:["在","在","覺得","覺得","有","要","知道","知道","想","做","用","做"]},
+  {title:{t:"同學聚會",s:"同学聚会"}, turns:[
+    {speaker:{t:"同學A",s:"同学A"}, lines:[{t:"小美，你終於（1）了！我們都（2）了一陣子了。",s:"小美，你终于（1）了！我们都（2）了一阵子了。"}]},
+    {speaker:{t:"同學B",s:"同学B"}, lines:[{t:"不好意思，路上車有點多。（3）到你們真高興！",s:"不好意思，路上车有点多。（3）到你们真高兴！"}]},
+    {speaker:{t:"同學C",s:"同学C"}, lines:[{t:"快坐快坐，我們正在（4）菜單呢。你（5）吃點什麼？",s:"快坐快坐，我们正在（4）菜单呢。你（5）吃点什么？"}]},
+    {speaker:{t:"同學B",s:"同学B"}, lines:[{t:"我（6）這家店的招牌菜（7）牛肉麵，那我們就點這個吧。",s:"我（6）这家店的招牌菜（7）牛肉面，那我们就点这个吧。"}]},
+    {speaker:{t:"同學A",s:"同学A"}, lines:[{t:"好，那我（8）手機幫大家點餐。大家一邊（9）一邊聊聊最近的生活吧！",s:"好，那我（8）手机帮大家点餐。大家一边（9）一边聊聊最近的生活吧！"}]},
+    {speaker:{t:"同學C",s:"同学C"}, lines:[{t:"我覺得大家都變了很多呢，都快認不出了！",s:"我觉得大家都变了很多呢，都快认不出了！"}]}
+  ], answers:["來","到","看","看","想","看","是","用","吃"]},
+  {title:{t:"朋友約定",s:"朋友约定"}, turns:[
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"週末你有空嗎？我（1）（2）爬山。",s:"周末你有空吗？我（1）（2）爬山。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"週末嗎？我本來（3）在家裡追劇，不過如果（4）爬山的話，我（5）去！",s:"周末吗？我本来（3）在家里追剧，不过如果（4）爬山的话，我（5）去！"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"太棒了！小李也（6）他（7）（8）。",s:"太棒了！小李也（6）他（7）（8）。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"太好了，幾點出發？",s:"太好了，几点出发？"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"我們早上八點在公園門口見，到時候我打電話（9）你。",s:"我们早上八点在公园门口见，到时候我打电话（9）你。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"沒問題，那我（10）一些飯糰帶去吧。",s:"没问题，那我（10）一些饭团带去吧。"}]}
+  ], answers:["想","去","想","是","想","說","要","來","給","做"]},
+  {title:{t:"餐廳點餐",s:"餐厅点餐"}, turns:[
+    {speaker:{t:"服務生",s:"服务生"}, lines:[{t:"您好，歡迎光臨！請問您們幾位？",s:"您好，欢迎光临！请问您们几位？"}]},
+    {speaker:{t:"顧客A",s:"顾客A"}, lines:[{t:"我們兩位。請問（1）位子嗎？",s:"我们两位。请问（1）位子吗？"}]},
+    {speaker:{t:"服務生",s:"服务生"}, lines:[{t:"（2），請跟我（3）。這（4）菜單，請問您們（5）吃點什麼？",s:"（2），请跟我（3）。这（4）菜单，请问您们（5）吃点什么？"}]},
+    {speaker:{t:"顧客A",s:"顾客A"}, lines:[{t:"你（6）他們家的招牌魚怎麼樣？",s:"你（6）他们家的招牌鱼怎么样？"}]},
+    {speaker:{t:"顧客B",s:"顾客B"}, lines:[{t:"（7）（8）非常好吃，我們點一條吧。",s:"（7）（8）非常好吃，我们点一条吧。"}]},
+    {speaker:{t:"顧客A",s:"顾客A"}, lines:[{t:"好，先生，我們（9）清蒸魚，先（10）兩杯生啤吧！其他我們再慢慢（11）。",s:"好，先生，我们（9）清蒸鱼，先（10）两杯生啤吧！其他我们再慢慢（11）。"}]},
+    {speaker:{t:"服務生",s:"服务生"}, lines:[{t:"好的，請稍等。",s:"好的，请稍等。"}]}
+  ], answers:["有","有","來","是","要","覺得","聽","說","要","來","看"]},
+  {title:{t:"購物中心",s:"购物中心"}, turns:[
+    {speaker:{t:"顧客",s:"顾客"}, lines:[{t:"不好意思，我（1）找一件適合送朋友的生日禮物。",s:"不好意思，我（1）找一件适合送朋友的生日礼物。"}]},
+    {speaker:{t:"店員",s:"店员"}, lines:[{t:"您好！請問您的朋友（2）男生還是女生呢？喜歡什麼風格？",s:"您好！请问您的朋友（2）男生还是女生呢？喜欢什么风格？"}]},
+    {speaker:{t:"顧客",s:"顾客"}, lines:[{t:"（3）女生，她很喜歡（4）香水。",s:"（3）女生，她很喜歡（4）香水。"}]},
+    {speaker:{t:"店員",s:"店员"}, lines:[{t:"那您（5）看看這一款，這（6）我們店裡最受歡迎的，我（7）她應該也會喜歡。",s:"那您（5）看看这一款，这（6）我们店里最受欢迎的，我（7）她应该也会喜欢。"}]},
+    {speaker:{t:"顧客",s:"顾客"}, lines:[{t:"嗯，聞起來（8）花香和水果香，不錯。多少錢？",s:"嗯，闻起来（8）花香和水果香，不错。多少钱？"}]},
+    {speaker:{t:"店員",s:"店员"}, lines:[{t:"這款（9）五百元。如果您（10）的話，（11）給您九折。",s:"这款（9）五百元。如果您（10）的话，（11）给您九折。"}]},
+    {speaker:{t:"顧客",s:"顾客"}, lines:[{t:"好。（12）刷卡嗎？",s:"好。（12）刷卡吗？"}]},
+    {speaker:{t:"店員",s:"店员"}, lines:[{t:"（13）。您要包裝嗎？（14）選三種包裝紙。",s:"（13）。您要包装吗？（14）选三种包装纸。"}]}
+  ], answers:["想","是","是","用","可以","是","想","有","是","要","可以","可以","可以","可以"]},
+  {title:{t:"師生",s:"师生"}, turns:[
+    {speaker:{t:"老師",s:"老师"}, lines:[{t:"小明，你（1）我為什麼找你嗎？",s:"小明，你（1）我为什么找你吗？"}]},
+    {speaker:{t:"學生",s:"学生"}, lines:[{t:"老師，（2）因為我的作文嗎？",s:"老师，（2）因为我的作文吗？"}]},
+    {speaker:{t:"老師",s:"老师"}, lines:[{t:"對。你（3）這一段，「的、地、得」的用法（4）錯誤。",s:"对。你（3）这一段，「的、地、得」的用法（4）错误。"}]},
+    {speaker:{t:"學生",s:"学生"}, lines:[{t:"啊，我沒注意。老師，您（5）再跟我說一次用法嗎？",s:"啊，我没注意。老师，您（5）再跟我说一次用法吗？"}]},
+    {speaker:{t:"老師",s:"老师"}, lines:[{t:"當然（6）。你把筆記本拿出來，我（7）你幾個簡單的例子，你就（8）了。",s:"当然（6）。你把笔记本拿出来，我（7）你几个简单的例子，你就（8）了。"}]}
+  ], answers:["知道","是","看","有","可以","可以","給","會"]},
+  {title:{t:"母子",s:"母子"}, turns:[
+    {speaker:{t:"媽媽",s:"妈妈"}, lines:[{t:"你（1）沒有在做功課？一直坐在電腦前面！",s:"你（1）没有在做功课？一直坐在电脑前面！"}]},
+    {speaker:{t:"兒子",s:"儿子"}, lines:[{t:"媽，我正（2）（3）作業。",s:"妈，我正（2）（3）作业。"}]},
+    {speaker:{t:"媽媽",s:"妈妈"}, lines:[{t:"你起來動一動。我幫你切一點水果。",s:"你起来动一动。我帮你切一点水果。"}]},
+    {speaker:{t:"兒子",s:"儿子"}, lines:[{t:"好。不過我不餓。",s:"好。不过我不饿。"}]},
+    {speaker:{t:"媽媽",s:"妈妈"}, lines:[{t:"不餓也（4）吃一點。你（5）維生素很重要嗎？",s:"不饿也（4）吃一点。你（5）维生素很重要吗？"}]},
+    {speaker:{t:"兒子",s:"儿子"}, lines:[{t:"（6）了，我這就（7）吃。",s:"（6）了，我这就（7）吃。"}]}
+  ], answers:["有","在","寫","要","知道","知道","來"]},
+  {title:{t:"大學同學",s:"大学同学"}, turns:[
+    {speaker:{t:"同學A",s:"同学A"}, lines:[{t:"好久不見！你最近在忙什麼？",s:"好久不见！你最近在忙什么？"}]},
+    {speaker:{t:"同學B",s:"同学B"}, lines:[{t:"我在（1）論文。你呢？",s:"我在（1）论文。你呢？"}]},
+    {speaker:{t:"同學A",s:"同学A"}, lines:[{t:"我（2）上班了。對了，這個週末（3）同學會，你（4）（5）嗎？",s:"我（2）上班了。对了，这个周末（3）同学会，你（4）（5）吗？"}]},
+    {speaker:{t:"同學B",s:"同学B"}, lines:[{t:"我看看時間。你再（6）我地點，時間也（7）我一下。",s:"我看看时间。你再（6）我地点，时间也（7）我一下。"}]},
+    {speaker:{t:"同學A",s:"同学A"}, lines:[{t:"好。六點半（8），一定（9）（10）喔！",s:"好。六点半（8），一定（9）（10）喔！"}]}
+  ], answers:["寫","開始","有","能","來","給","給","開始","要","來"]},
+  {title:{t:"一般朋友",s:"一般朋友"}, turns:[
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"嗨，你（1）借我一點錢嗎？",s:"嗨，你（1）借我一点钱吗？"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"怎麼了？（2）什麼事嗎？",s:"怎么了？（2）什么事吗？"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"我的錢包掉了。",s:"我的钱包掉了。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"啊？在哪裡掉的？",s:"啊？在哪里掉的？"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"可能（3）在電車上被偷的，我（4）最近治安很不好。",s:"可能（3）在电车上被偷的，我（4）最近治安很不好。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"太慘了，你（5）多少？",s:"太惨了，你（5）多少？"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"一千塊就（6）了。我下週一（7）還你。",s:"一千块就（6）了。我下周一（7）还你。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"好，（8）你。下次（9）小心一點。",s:"好，（8）你。下次（9）小心一点。"}]}
+  ], answers:["可以","有","是","覺得","要","可以","會","給","要"]},
+  {title:{t:"夫妻",s:"夫妻"}, turns:[
+    {speaker:{t:"妻",s:"妻"}, lines:[{t:"老公，這個星期天我們（1）什麼計畫嗎？",s:"老公，这个星期天我们（1）什么计划吗？"}]},
+    {speaker:{t:"夫",s:"夫"}, lines:[{t:"還沒（2）。你（3）做什麼？",s:"还没（2）。你（3）做什么？"}]},
+    {speaker:{t:"妻",s:"妻"}, lines:[{t:"我（4）一直待在家裡很無聊。我（5）（6）山上（7）走，（8）嗎？",s:"我（4）一直待在家里很无聊。我（5）（6）山上（7）走，（8）吗？"}]},
+    {speaker:{t:"夫",s:"夫"}, lines:[{t:"可是週六我（9）加班。要不星期天？",s:"可是周六我（9）加班。要不星期天？"}]},
+    {speaker:{t:"妻",s:"妻"}, lines:[{t:"星期天也行！你（10）象山怎麼樣？",s:"星期天也行！你（10）象山怎么样？"}]},
+    {speaker:{t:"夫",s:"夫"}, lines:[{t:"很好，就（11）象山吧！我們早點出發，比較不（12）塞車。",s:"很好，就（11）象山吧！我们早点出发，比较不（12）塞车。"}]}
+  ], answers:["有","有","想","覺得","想","去","走","可以","要","覺得","去","會"]},
+  {title:{t:"男女朋友",s:"男女朋友"}, turns:[
+    {speaker:{t:"男",s:"男"}, lines:[{t:"喂！",s:"喂！"}]},
+    {speaker:{t:"女",s:"女"}, lines:[{t:"親愛的，（1）我。你（2）我嗎？",s:"亲爱的，（1）我。你（2）我吗？"}]},
+    {speaker:{t:"男",s:"男"}, lines:[{t:"當然（3）！我們（4）一個禮拜沒見面了。",s:"当然（3）！我们（4）一个礼拜没见面了。"}]},
+    {speaker:{t:"女",s:"女"}, lines:[{t:"今晚我（5）去看電影，好嗎？",s:"今晚我（5）去看电影，好吗？"}]},
+    {speaker:{t:"男",s:"男"}, lines:[{t:"好呀！你（6）看什麼類型的？",s:"好呀！你（6）看什么类型的？"}]},
+    {speaker:{t:"女",s:"女"}, lines:[{t:"我（7）看喜劇。你（8）早點下班嗎？電影七點（9）。",s:"我（7）看喜剧。你（8）早点下班吗？电影七点（9）。"}]},
+    {speaker:{t:"男",s:"男"}, lines:[{t:"好。我（10）請同事幫忙，請他快一點。下班前我再打電話（11）你。",s:"好。我（10）请同事帮忙，请他快一点。下班前我再打电话（11）你。"}]}
+  ], answers:["是","想","想","有","想","想","想","可以","開始","會","給"]},
+  {title:{t:"同事間",s:"同事间"}, turns:[
+    {speaker:{t:"同事A",s:"同事A"}, lines:[{t:"中午了，你（1）吃什麼？",s:"中午了，你（1）吃什么？"}]},
+    {speaker:{t:"同事B",s:"同事B"}, lines:[{t:"我（2）這裡不久，不（3）附近的餐廳。（4）（5）有一家新開的麵館，你（6）過了嗎？",s:"我（2）这里不久，不（3）附近的餐厅。（4）（5）有一家新开的面馆，你（6）过了吗？"}]},
+    {speaker:{t:"同事A",s:"同事A"}, lines:[{t:"還沒（7）。那我們就（8）那家吃吧！",s:"还没（7）。那我们就（8）那家吃吧！"}]},
+    {speaker:{t:"同事B",s:"同事B"}, lines:[{t:"好，不過我（9）先打完這個報告。你（10）等我十分鐘嗎？",s:"好，不过我（9）先打完这个报告。你（10）等我十分钟吗？"}]},
+    {speaker:{t:"同事A",s:"同事A"}, lines:[{t:"當然（11）。你慢慢來，我等你。",s:"当然（11）。你慢慢来，我等你。"}]}
+  ], answers:["想","來","知道","聽","說","吃","有","去","要","可以","可以"]},
+  {title:{t:"上司與員工",s:"上司与员工"}, turns:[
+    {speaker:{t:"上司",s:"上司"}, lines:[{t:"小陳，那個新專案（1）你負責的吧？（2）得怎麼樣了？",s:"小陈，那个新专案（1）你负责的吧？（2）得怎么样了？"}]},
+    {speaker:{t:"員工",s:"员工"}, lines:[{t:"老闆，正在進行中。目前完成了一半。",s:"老板，正在进行中。目前完成了一半。"}]},
+    {speaker:{t:"上司",s:"上司"}, lines:[{t:"你需要更多時間嗎？客戶希望最晚下週五（3）完成。",s:"你需要更多时间吗？客户希望最晚下周五（3）完成。"}]},
+    {speaker:{t:"員工",s:"员工"}, lines:[{t:"好的，（4）了，我（5）努力的。",s:"好的，（4）了，我（5）努力的。"}]},
+    {speaker:{t:"上司",s:"上司"}, lines:[{t:"人手不夠的話，我（6）請人事部再多派一個人幫你。",s:"人手不够的话，我（6）请人事部再多派一个人帮你。"}]}
+  ], answers:["是","做","能","知道","會","要"]},
+  {title:{t:"搬家",s:"搬家"}, turns:[
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"你最近好像很忙，（1）不是要搬家了？",s:"你最近好像很忙，（1）不是要搬家了？"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"對啊，我下星期就要搬到新家（2）了。",s:"对啊，我下星期就要搬到新家（2）了。"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"太好了！新家在哪裡？",s:"太好了！新家在哪里？"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"（3）捷運站附近，（4）路五分鐘就到。",s:"（3）捷运站附近，（4）路五分钟就到。"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"那你要不要（5）搬家公司幫忙？",s:"那你要不要（5）搬家公司帮忙？"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"我（6）自己搬，比較省錢。你要不要（7）幫我？搬完我請你（8）飲料。",s:"我（6）自己搬，比较省钱。你要不要（7）帮我？搬完我请你（8）饮料。"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"好啊，沒問題！你有沒有先去（9）一些紙箱？",s:"好啊，没问题！你有没有先去（9）一些纸箱？"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"（10）了，昨天已經去超市（11）了很多。你（12）先幫我把書都裝進箱子裡，我怕書太重，（13）了（14）頭痛。",s:"（10）了，昨天已经去超市（11）了很多。你（12）先帮我把书都装进箱子里，我怕书太重，（13）了（14）头痛。"}]},
+    {speaker:{t:"朋友A",s:"朋友A"}, lines:[{t:"沒問題。搬家那天你打電話（15）我，我一定（16）（17）。",s:"没问题。搬家那天你打电话（15）我，我一定（16）（17）。"}]},
+    {speaker:{t:"朋友B",s:"朋友B"}, lines:[{t:"好，謝謝你！等我（18）進新家，你要常常（19）玩。",s:"好，谢谢你！等我（18）进新家，你要常常（19）玩。"}]}
+  ], answers:["是","住","在","走","叫","想","來","喝","買","買","買","可以","看","會","叫","會","來","住","來"]}
+];
+
+// ==================== STATE ====================
+let state = {
+  lang: 't',
+  showPinyin: false,
+  mode: 'passage',
+  currentIndex: null,
+  answers: {},
+  activeBlank: null,
+  lockedCorrect: new Set(),
+  wrongFlags: new Set(),
+  showingAnswers: false,
+  progressMap: {}
+};
+
+const LABELS = {
+  t:{ title:'超高頻動詞練習', wordbank:'動詞選項', passage:'短文', dialogue:'會話',
+      check:'對答案', recheck:'再對一次', pinyin:'拼音',
+      hintShow:'顯示答案', hintHide:'隱藏答案',
+      perfect:['太棒了！全對！','完全正確，你很厲害！','漂亮！滿分過關！'],
+      retryMsg:(n)=>`還有 ${n} 個空格不對，再想想看，點一下錯的空格重新選。` },
+  s:{ title:'超高频动词练习', wordbank:'动词选项', passage:'短文', dialogue:'会话',
+      check:'对答案', recheck:'再对一次', pinyin:'拼音',
+      hintShow:'显示答案', hintHide:'隐藏答案',
+      perfect:['太棒了！全对！','完全正确，你很厉害！','漂亮！满分过关！'],
+      retryMsg:(n)=>`还有 ${n} 个空格不对，再想想看，点一下错的空格重新选。` }
+};
+
+function txt(seg){ return state.lang==='t' ? seg.t : seg.s; }
+
+function applyLangClass(){
+  document.getElementById('app-root').classList.toggle('lang-t', state.lang==='t');
+  document.getElementById('app-root').classList.toggle('lang-s', state.lang==='s');
+}
+
+function chooseLang(l){ state.lang=l; applyLangClass(); goList(); }
+function toggleLangQuick(){ state.lang=state.lang==='t'?'s':'t'; applyLangClass(); renderList(); }
+function togglePinyin(){
+  state.showPinyin=!state.showPinyin;
+  document.querySelectorAll('.toggle-pill').forEach(p=>p.classList.toggle('on', state.showPinyin));
+  document.getElementById('screen-list').classList.toggle('pinyin-off', !state.showPinyin);
+  document.getElementById('screen-exercise').classList.toggle('pinyin-off', !state.showPinyin);
+}
+function goStart(){ show('screen-start'); }
+function goList(){ renderList(); show('screen-list'); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+function switchTab(mode){
+  state.mode=mode;
+  document.getElementById('tab-passage').classList.toggle('active', mode==='passage');
+  document.getElementById('tab-dialogue').classList.toggle('active', mode==='dialogue');
+  renderCardList();
+}
+
+function renderList(){
+  const L=LABELS[state.lang];
+  document.getElementById('list-title').textContent=L.title;
+  document.getElementById('lbl-wordbank').textContent=L.wordbank;
+  document.getElementById('tab-passage').textContent=L.passage;
+  document.getElementById('tab-dialogue').textContent=L.dialogue;
+  document.getElementById('pinyin-toggle-list').textContent=L.pinyin;
+  document.getElementById('lang-quick-btn').textContent=state.lang==='t'?'繁':'简';
+  document.getElementById('verb-strip-list').innerHTML=VERBS.map(v=>`<span class="vchip han">${state.lang==='t'?v.t:v.s}</span>`).join('');
+  renderCardList();
+}
+
+function itemKey(mode,idx){ return mode+'-'+idx; }
+
+function renderCardList(){
+  const data=state.mode==='passage'?PASSAGES:DIALOGUES;
+  const L=LABELS[state.lang];
+  document.getElementById('card-list').innerHTML=data.map((item,idx)=>{
+    const done=state.progressMap[itemKey(state.mode,idx)];
+    const num = idx + 1;  // 短文和會話都用數字 1,2,3...
+    return `<div class="item-card ${state.mode==='dialogue'?'dialogue':''}" onclick="openItem(${idx})">
+      <div class="item-num han">${num}</div>
+      <div><div class="item-title han">${txt(item.title)}</div>
+      <div class="item-sub">${item.answers.length} 空格 · ${state.mode==='passage'?L.passage:L.dialogue}</div></div>
+      <div class="item-progress ${done?'done':''}">${done?'✓':item.answers.length+'題'}</div>
+    </div>`;
+  }).join('');
+}
+
+function openItem(idx){
+  state.currentIndex=idx;
+  state.answers={};
+  state.activeBlank=null;
+  state.lockedCorrect=new Set();
+  state.wrongFlags=new Set();
+  state.showingAnswers=false;
+  renderExercise();
+  show('screen-exercise');
+}
+
+function currentItem(){ return (state.mode==='passage'?PASSAGES:DIALOGUES)[state.currentIndex]; }
+
+function allBlankIds(){
+  const item=currentItem(); const ids=[];
+  if(state.mode==='passage'){
+    const regex=/（(\d+)）/g; let m; const t=txt(item.segs[0]);
+    while((m=regex.exec(t))!==null) ids.push(parseInt(m[1]));
+  } else {
+    item.turns.forEach(turn=>{ turn.lines.forEach(line=>{
+      const regex=/（(\d+)）/g; let m; const t=txt(line);
+      while((m=regex.exec(t))!==null) ids.push(parseInt(m[1]));
+    });});
+  }
+  return ids.sort((a,b)=>a-b);
+}
+
+function answerFor(id){ const item=currentItem(); const pos=allBlankIds().indexOf(id); return item.answers[pos]; }
+
+function renderExercise(){
+  const item=currentItem(); const L=LABELS[state.lang];
+  document.getElementById('exercise-title').textContent=txt(item.title);
+  document.getElementById('pinyin-toggle-ex').textContent=L.pinyin;
+  document.getElementById('check-btn').textContent=L.check;
+  document.getElementById('hint-btn').textContent=state.showingAnswers?L.hintHide:L.hintShow;
+  document.getElementById('hint-btn').classList.toggle('on', state.showingAnswers);
+  document.getElementById('wordbank').innerHTML=VERBS.map(v=>`<span class="chip han" onclick="pickWord('${state.lang==='t'?v.t:v.s}')">${state.lang==='t'?v.t:v.s}</span>`).join('');
+  const body=document.getElementById('exercise-body');
+  if(state.mode==='passage'){
+    body.innerHTML=`<div class="passage-wrap"><div class="passage-body han" id="passage-text">${renderSegments(item.segs)}</div></div>`;
+  } else {
+    body.innerHTML=`<div class="passage-wrap">${item.turns.map(t=>`
+      <div class="dialogue-turn"><div class="speaker-badge han">${txt(t.speaker)}</div>
+      <div class="dialogue-line han">${renderSegments(t.lines)}</div></div>`).join('')}</div>`;
+  }
+  document.getElementById('result-banner').className='result-banner';
+  document.getElementById('result-banner').innerHTML='';
+  updateProgress();
+  document.querySelectorAll('.toggle-pill').forEach(p=>p.classList.toggle('on', state.showPinyin));
+  document.getElementById('screen-exercise').classList.toggle('pinyin-off', !state.showPinyin);
+}
+
+function renderSegments(segs){
+  return segs.map(s=>{
+    const text=txt(s); let result='', last=0; const regex=/（(\d+)）/g; let m;
+    while((m=regex.exec(text))!==null){
+      result+=text.substring(last,m.index);
+      const id=parseInt(m[1]); const filled=state.answers[id]; const cls=['blank']; let display;
+      if(state.showingAnswers && !state.lockedCorrect.has(id)){
+        cls.push('hint'); display=answerFor(id);
+      } else {
+        if(state.lockedCorrect.has(id)) cls.push('correct');
+        else if(state.wrongFlags.has(id)) cls.push('wrong');
+        else if(state.activeBlank===id) cls.push('active');
+        display=filled||'';
+      }
+      result+=`<span class="${cls.join(' ')}" onclick="onBlankClick(${id})">${display||'&nbsp;&nbsp;&nbsp;&nbsp;'}</span>`;
+      last=m.index+m[0].length;
+    }
+    result+=text.substring(last);
+    return result;
+  }).join('');
+}
+
+function onBlankClick(id){
+  if(state.showingAnswers) return;
+  if(state.lockedCorrect.has(id)) return;
+  delete state.answers[id];
+  state.wrongFlags.delete(id);
+  state.activeBlank=id;
+  refreshBody();
+}
+
+function pickWord(word){
+  if(state.showingAnswers) return;
+  let target=state.activeBlank;
+  if(target==null || state.lockedCorrect.has(target)){
+    const ids=allBlankIds();
+    target=ids.find(id=>!state.answers[id]&&!state.lockedCorrect.has(id));
+  }
+  if(target==null) return;
+  state.answers[target]=word;
+  state.wrongFlags.delete(target);
+  const next=allBlankIds().find(id=>!state.answers[id]&&!state.lockedCorrect.has(id));
+  state.activeBlank=next!=null?next:null;
+  refreshBody();
+}
+
+function refreshBody(){
+  const item=currentItem();
+  if(state.mode==='passage') document.getElementById('passage-text').innerHTML=renderSegments(item.segs);
+  else renderExercise();
+  updateProgress();
+}
+
+function updateProgress(){
+  const ids=allBlankIds();
+  const filled=ids.filter(id=>state.answers[id]).length;
+  document.getElementById('progress-fill').style.width=(filled/ids.length*100)+'%';
+  document.getElementById('check-btn').disabled=filled<ids.length;
+}
+
+function toggleShowAnswers(){
+  state.showingAnswers=!state.showingAnswers;
+  state.activeBlank=null;
+  const L=LABELS[state.lang];
+  const btn=document.getElementById('hint-btn');
+  btn.classList.toggle('on', state.showingAnswers);
+  btn.textContent=state.showingAnswers?L.hintHide:L.hintShow;
+  refreshBodyFull();
+}
+
+function checkAnswers(){
+  const ids=allBlankIds();
+  state.wrongFlags=new Set();
+  ids.forEach(id=>{
+    if(state.lockedCorrect.has(id)) return;
+    // answers[] is always stored in Traditional characters, but in Simplified
+    // mode the chip the student tapped is a Simplified character (e.g. "说").
+    // Normalize the student's answer back to Traditional before comparing,
+    // otherwise every answer would be marked wrong while in Simplified mode.
+    const rawGiven=state.answers[id];
+    const given=S2T[rawGiven]||rawGiven;
+    const correct=answerFor(id);
+    const accept=[correct];
+    if(correct==='可以') accept.push('能');
+    if(correct==='能') accept.push('可以');
+    if(correct==='會') accept.push('能');
+    if(correct==='要') accept.push('想');
+    if(correct==='想') accept.push('要');
+    if(accept.includes(given)) state.lockedCorrect.add(id);
+    else state.wrongFlags.add(id);
+  });
+  const wrongCount=state.wrongFlags.size;
+  state.activeBlank=null;
+  const L=LABELS[state.lang];
+  const banner=document.getElementById('result-banner');
+  if(wrongCount===0){
+    state.progressMap[itemKey(state.mode, state.currentIndex)]=true;
+    banner.className='result-banner perfect show';
+    banner.innerHTML=`<div class="stamp han">滿分</div><div>${L.perfect[Math.floor(Math.random()*L.perfect.length)]}</div>`;
+    document.getElementById('check-btn').textContent=L.check;
+  } else {
+    banner.className='result-banner retry show';
+    banner.innerHTML=`<div>${L.retryMsg(wrongCount)}</div>`;
+    document.getElementById('check-btn').textContent=L.recheck;
+  }
+  refreshBodyFull();
+}
+
+function refreshBodyFull(){
+  const item=currentItem();
+  if(state.mode==='passage') document.getElementById('passage-text').innerHTML=renderSegments(item.segs);
+  else document.querySelectorAll('.dialogue-line').forEach((el,i)=>{ el.innerHTML=renderSegments(item.turns[i].lines); });
+  updateProgress();
+  const ids=allBlankIds();
+  document.getElementById('check-btn').disabled=ids.filter(id=>state.answers[id]).length<ids.length || state.showingAnswers;
+}
+
+chooseLang('t');
+</script>
+</body>
+</html>
